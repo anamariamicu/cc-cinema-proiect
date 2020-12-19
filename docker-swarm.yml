@@ -4,6 +4,7 @@ services:
   db:
     image: mysql:5.7
     deploy:
+      replicas: 2
       restart_policy:
         condition: on-failure
     ports:
@@ -17,9 +18,25 @@ services:
       - serverdb
       - admindb
       - grafanadb
+      - authdb
+
+  auth:
+    image: anamariamicu/cc-cinema-proiect-auth
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    ports:
+      - '8004:8004'
+    depends_on:
+      - db
+    networks:
+      - admininterfaceauth
+      - clientauth
+      - authdb
 
   admin:
-    image: anamariamicu/cinema-proiect:admin
+    image: anamariamicu/cc-cinema-proiect-admin
     deploy:
       replicas: 2
       restart_policy:
@@ -33,7 +50,7 @@ services:
       - admindb
       
   admin-interface:
-    image: anamariamicu/cinema-proiect:admin-interface
+    image: anamariamicu/cc-cinema-proiect-admin-interface
     deploy:
       replicas: 2
       restart_policy:
@@ -45,11 +62,12 @@ services:
       - db
     networks:
       - admininterface
+      - admininterfaceauth
     stdin_open: true
     tty: true
 
   server:
-    image: anamariamicu/cinema-proiect:server
+    image: anamariamicu/cc-cinema-proiect-server
     deploy:
       replicas: 2
       restart_policy:
@@ -63,7 +81,7 @@ services:
       - serverclient
 
   client:
-    image: anamariamicu/cinema-proiect:client
+    image: anamariamicu/cc-cinema-proiect-client
     deploy:
       replicas: 2
       restart_policy:
@@ -75,6 +93,7 @@ services:
       - db
     networks:
       - serverclient
+      - clientauth
     stdin_open: true
     tty: true
 
@@ -103,3 +122,6 @@ networks:
   admininterface:
   admindb:
   grafanadb:
+  authdb:
+  admininterfaceauth:
+  clientauth:

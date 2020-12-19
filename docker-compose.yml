@@ -18,7 +18,7 @@ services:
     tty: true
 
   admin:
-    image: anamariamicu/cinema-proiect:admin
+    image: anamariamicu/cc-cinema-proiect-admin
     links:
       - db:mysql
     ports:
@@ -32,7 +32,7 @@ services:
     tty: true
       
   admin-interface:
-    image: anamariamicu/cinema-proiect:admin-interface
+    image: anamariamicu/cc-cinema-proiect-admin-interface
     ports:
       - '8001:8001'
     links:
@@ -47,7 +47,7 @@ services:
     tty: true
 
   client:
-    image: anamariamicu/cinema-proiect:client
+    image: anamariamicu/cc-cinema-proiect-client
     ports:
       - '8003:8003'
     links:
@@ -62,7 +62,7 @@ services:
     tty: true
 
   server:
-    image: anamariamicu/cinema-proiect:server
+    image: anamariamicu/cc-cinema-proiect-server
     links:
       - db:mysql
     ports:
