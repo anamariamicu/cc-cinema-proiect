@@ -20,34 +20,39 @@ cursor = None
 connection = None
 url_auth = None
 
-def token_required(something):
+def token_required(func):
 	def wrap():
 		try:
 			token_passed = request.headers['token']
-			print(token_passed)
 		except:
 			return "Token required", 401
 		if token_passed != '' and token_passed != None:
 			url = url_auth + '/decode'
-			print(url)
 			data = {
 				'token': token_passed
 			}
-
 			response = requests.get(url = url, data = data)
+
 			if response.status_code == 401:
 				return "Invalid token", 401
-			print(response.json())
-			return something(response.json())
+
+			user_details = response.json()
+			user_id = user_details['user_id']
+			role = user_details['role']
+
+			if (role != 1):
+				return "Unauthorized", 401
+
+			return func()
 		else:
 			return "Token required", 401
 
+	wrap.__name__ = func.__name__
 	return wrap
 
 @server.route('/movie')
 @token_required
 def get_movies():
-	print(url_auth)
 	connect_to_db()
 	cursor.callproc('get_movies', [])
 
@@ -61,6 +66,7 @@ def get_movies():
 	return json.dumps(movies), 200
 
 @server.route('/screening/movie')
+@token_required
 def get_screenings():
 	movie_id = request.args.get('movie_id')
 
@@ -77,6 +83,7 @@ def get_screenings():
 	return json.dumps(screenings), 200
 
 @server.route('/screening/date')
+@token_required
 def get_screenings_for_date():
 	date = request.args.get('date')
 
@@ -93,6 +100,7 @@ def get_screenings_for_date():
 	return json.dumps(screenings), 200
 
 @server.route('/screening/cinema_hall')
+@token_required
 def get_seats_for_screening():
 	screening_id = request.args.get('screening_id')
 
@@ -144,6 +152,7 @@ def get_seats_for_screening():
 	return json.dumps(seats), 200
 
 @server.route('/reservation', methods = ['POST'])
+@token_required
 def get_reservation():
 	seats = request.form.getlist('seats')
 	screening_id = request.form.get('screening_id')
@@ -204,9 +213,6 @@ def get_reservation():
 	for index in range(int(len(seats) / 2)):
 		seat = (seats[2 * index], seats[2 * index + 1])
 
-		print("rezerv")
-		print(seat)
-
 		connect_to_db()
 		cursor.callproc('add_reserved_seat', [screening_id, id_reservation, seat[0], seat[1]])
 		cursor.close()
@@ -214,6 +220,7 @@ def get_reservation():
 	return str(id_reservation), 200
 
 @server.route('/reservation/details')
+@token_required
 def get_reservation_details():
 	reservation_id = request.args.get('reservation_id')
 
@@ -247,6 +254,7 @@ def get_reservation_details():
 	return json.dumps(reservation), 200
 
 @server.route('/reservation/remove', methods = ['POST'])
+@token_required
 def remove_reservation():
 	id = request.form.get('id')
 
@@ -281,6 +289,7 @@ def remove_reservation():
 	return "OK", 200
 
 @server.route('/reservation/buy', methods = ['POST'])
+@token_required
 def buy_reservation():
 	id = request.form.get('reservation_id')
 	credit_card_info = request.form.get('credit_card_information')

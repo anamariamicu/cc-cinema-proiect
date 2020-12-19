@@ -27,8 +27,8 @@ services:
     depends_on:
       - db
     networks:
-      - admininterfaceauth
-      - clientauth
+      - adminauth
+      - serverauth
       - authdb
     stdin_open: true
     tty: true
@@ -44,6 +44,7 @@ services:
     networks:
       - admininterface
       - admindb
+      - adminauth
     stdin_open: true
     tty: true
       
@@ -59,7 +60,6 @@ services:
       - admin
     networks:
       - admininterface
-      - admininterfaceauth
     stdin_open: true
     tty: true
 
@@ -75,7 +75,6 @@ services:
       - server
     networks:
       - serverclient
-      - clientauth
     stdin_open: true
     tty: true
 
@@ -83,13 +82,16 @@ services:
     build: ./server
     links:
       - db:mysql
+      - auth
     ports:
       - '8002:8002'
     depends_on:
       - db
+      - auth
     networks:
       - serverdb
       - serverclient
+      - serverauth
     stdin_open: true
     tty: true
 
@@ -117,5 +119,5 @@ networks:
   admindb:
   grafanadb:
   authdb:
-  admininterfaceauth:
-  clientauth:
+  adminauth:
+  serverauth:

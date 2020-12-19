@@ -2,6 +2,8 @@ from flask import Flask, request, Response
 import mysql.connector
 import os
 import json
+import sys
+import requests
 
 admin = Flask(__name__)
 
@@ -15,8 +17,40 @@ config = {
 
 cursor = None
 connection = None
+url_auth = None
+
+def token_required(func):
+	def wrap():
+		try:
+			token_passed = request.headers['token']
+		except:
+			return "Token required", 401
+		if token_passed != '' and token_passed != None:
+			url = url_auth + '/decode'
+			data = {
+				'token': token_passed
+			}
+			response = requests.get(url = url, data = data)
+
+			if response.status_code == 401:
+				return "Invalid token", 401
+
+			user_details = response.json()
+			user_id = user_details['user_id']
+			role = user_details['role']
+
+			if (role != 0):
+				return "Unauthorized", 401
+
+			return func()
+		else:
+			return "Token required", 401
+
+	wrap.__name__ = func.__name__
+	return wrap
 
 @admin.route('/cinema_hall/add', methods = ['POST'])
+@token_required
 def add_cinema_hall():
 	name = request.form.get('name')
 	number_of_rows = request.form.get('number_of_rows')
@@ -32,6 +66,7 @@ def add_cinema_hall():
 	return 'Sala de cinema adaugata cu succes', 200
 
 @admin.route('/cinema_hall')
+@token_required
 def get_cinema_halls():
 	connect_to_db()
 	cursor.callproc('get_cinema_halls', [])
@@ -46,6 +81,7 @@ def get_cinema_halls():
 	return json.dumps(cinema_halls), 200
 
 @admin.route('/cinema_hall/remove', methods = ['POST'])
+@token_required
 def remove_cinema_hall():
 	id = request.form.get('id')
 
@@ -80,6 +116,7 @@ def remove_cinema_hall():
 	return 'Sala de cinema eliminata cu succes', 200
 
 @admin.route('/movie/add', methods = ['POST'])
+@token_required
 def add_movie():
 	name = request.form.get('name')
 	genre = request.form.get('genre')
@@ -96,6 +133,7 @@ def add_movie():
 	return 'Film adaugat cu succes', 200
 
 @admin.route('/movie')
+@token_required
 def get_movies():
 	connect_to_db()
 	cursor.callproc('get_movies', [])
@@ -110,6 +148,7 @@ def get_movies():
 	return json.dumps(movies), 200
 
 @admin.route('/movie/remove', methods = ['POST'])
+@token_required
 def remove_movie():
 	id = request.form.get('id')
 
@@ -144,6 +183,7 @@ def remove_movie():
 	return 'Film eliminat cu succes', 200
 
 @admin.route('/screening/add', methods = ['POST'])
+@token_required
 def add_screening():
 	movie_id = request.form.get('movie_id')
 	cinema_hall_id = request.form.get('cinema_hall_id')
@@ -159,6 +199,7 @@ def add_screening():
 	return 'Proiectia filmului adaugata cu succes', 200
 
 @admin.route('/screening')
+@token_required
 def get_screenings():
 	movie_id = request.args.get('movie_id')
 
@@ -175,6 +216,7 @@ def get_screenings():
 	return json.dumps(screenings), 200
 
 @admin.route('/screening/remove', methods = ['POST'])
+@token_required
 def remove_screening():
 	id = request.form.get('id')
 
@@ -209,6 +251,7 @@ def remove_screening():
 	return 'Proiectia filmului eliminata cu succes', 200
 
 @admin.route('/screening/cinema_hall')
+@token_required
 def get_seats_for_screening():
 	screening_id = request.args.get('screening_id')
 
@@ -260,6 +303,7 @@ def get_seats_for_screening():
 	return json.dumps(seats), 200
 
 @admin.route('/screening/reservations')
+@token_required
 def get_reservations():
 	screening_id = request.args.get('screening_id')
 
@@ -311,6 +355,11 @@ def connect_to_db():
 			connected = False
 
 if __name__ == '__main__':
+	if len(sys.argv) != 2:
+		print('Mod de utilizare: python admin.py *url_auth*')
+		exit(1)
+	url_auth = sys.argv[1]
+
 	connect_to_db()
 	cursor.close()
 

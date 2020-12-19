@@ -31,9 +31,9 @@ services:
     depends_on:
       - db
     networks:
-      - admininterfaceauth
-      - clientauth
+      - serverauth
       - authdb
+      - adminauth
 
   admin:
     image: anamariamicu/cc-cinema-proiect-admin
@@ -48,6 +48,7 @@ services:
     networks:
       - admininterface
       - admindb
+      - adminauth
       
   admin-interface:
     image: anamariamicu/cc-cinema-proiect-admin-interface
@@ -62,7 +63,6 @@ services:
       - db
     networks:
       - admininterface
-      - admininterfaceauth
     stdin_open: true
     tty: true
 
@@ -76,9 +76,11 @@ services:
       - '8002:8002'
     depends_on:
       - db
+      - auth
     networks:
       - serverdb
       - serverclient
+      - serverauth
 
   client:
     image: anamariamicu/cc-cinema-proiect-client
@@ -93,7 +95,6 @@ services:
       - db
     networks:
       - serverclient
-      - clientauth
     stdin_open: true
     tty: true
 
@@ -123,5 +124,5 @@ networks:
   admindb:
   grafanadb:
   authdb:
-  admininterfaceauth:
-  clientauth:
+  serverauth:
+  adminauth:

@@ -20,12 +20,27 @@ CREATE TABLE cinema_hall(
 	number_of_seats_per_row INT
 );
 
+CREATE TABLE user(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(255),
+    user_password VARCHAR(255),
+    user_role INT
+);
+
 CREATE TABLE screening(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	movie_id INT,
 	cinema_hall_id INT,
 	start_date DATETIME,
 	FOREIGN KEY (movie_id) REFERENCES movie(id),
+	FOREIGN KEY (cinema_hall_id) REFERENCES cinema_hall(id)
+);
+
+CREATE TABLE seat(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	cinema_hall_id INT,
+	row INT,
+	number_seat INT,
 	FOREIGN KEY (cinema_hall_id) REFERENCES cinema_hall(id)
 );
 
@@ -38,27 +53,12 @@ CREATE TABLE reservation(
 	FOREIGN KEY (screening_id) REFERENCES screening(id)
 );
 
-CREATE TABLE seat(
-	id INT AUTO_INCREMENT PRIMARY KEY,
-	cinema_hall_id INT,
-	row INT,
-	number_seat INT,
-	FOREIGN KEY (cinema_hall_id) REFERENCES cinema_hall(id)
-);
-
 CREATE TABLE reserved_seat(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	seat_id INT,
 	reservation_id INT,
 	FOREIGN KEY (seat_id) REFERENCES seat(id),
 	FOREIGN KEY (reservation_id) REFERENCES reservation(id)
-);
-
-CREATE TABLE user(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_name VARCHAR(255),
-    user_password VARCHAR(255),
-    user_role INT
 );
 
 DELIMITER //
@@ -442,5 +442,6 @@ call add_reserved_seat(2, 3, 2, 4);
 call add_reserved_seat(2, 3, 2, 5);
 
 call buy_reservation(1, "INFO");
+
 call add_user('admin', 'adminpass', 0);
 call add_user('client', 'clientpass', 1);
