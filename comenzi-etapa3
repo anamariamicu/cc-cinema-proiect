@@ -1,0 +1,18 @@
+sudo docker-machine create --driver virtualbox myvm1
+sudo docker-machine create --driver virtualbox myvm2
+sudo docker-machine ssh myvm1 "docker swarm init --advertise-addr 192.168.99.100"
+sudo docker-machine ssh myvm2 "docker swarm join --token ..."
+sudo docker-machine scp docker-swarm.yml myvm1:.
+sudo docker-machine scp -r grafana/ myvm1:.
+sudo docker-machine scp -r grafana/ myvm2:.
+sudo docker-machine ssh myvm1 "mkdir data"
+sudo docker-machine ssh myvm2 "mkdir data"
+sudo docker-machine scp -r db/ myvm1:.
+sudo docker-machine scp -r db/ myvm2:.
+sudo docker-machine ssh myvm1 "docker stack deploy -c docker-swarm.yml cinema"
+URL: http://192.168.99.100:3000
+USER: admin
+PASS: adminpass
+sudo docker-machine rm myvm1
+sudo docker-machine rm myvm2
+

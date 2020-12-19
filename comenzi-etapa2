@@ -1,0 +1,6 @@
+sudo rm -rf data
+./remove_compose.sh
+sudo docker-compose up --build
+
+sudo docker ps
+sudo docker attach ID
