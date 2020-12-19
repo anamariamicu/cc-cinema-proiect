@@ -5,7 +5,7 @@ import os
 import json
 import jwt
 
-server = Flask(__name__)
+auth = Flask(__name__)
 
 config = {
 	'user': 'root',
@@ -19,7 +19,7 @@ cursor = None
 connection = None
 secret = 'secret'
 
-@server.route('/login', methods = ['POST'])
+@auth.route('/login', methods = ['POST'])
 def login():
 	username = request.form.get('username')
 	password = request.form.get('password')
@@ -27,90 +27,48 @@ def login():
 	connect_to_db()
 	cursor.callproc('check_user', [username, password])
 
-	role = None
+	user_details = None
 
 	for result in cursor.stored_results():
-		role = result.fetchone()[0]
+		user_details = result.fetchone()
 
-	if not role:
+	if not user_details:
 		cursor.close()
 		return "", 401
 
+	user_id = user_details[0]
+	role = user_details[1]
 	cursor.close()
 	
-	encoded_jwt = jwt.encode({'role': role}, secret, algorithm='HS256')
+	encoded_jwt = jwt.encode({'role': role, 'user_id': user_id}, secret, algorithm='HS256')
 
 	return encoded_jwt, 200
 
-@server.route('/reservation/remove', methods = ['POST'])
-def remove_reservation():
-	id = request.form.get('id')
-
+@auth.route('/users')
+def get_users():
 	connect_to_db()
-	cursor.callproc('check_reservation', [id])
+	cursor.callproc('get_users', [])
 
-	number_of_reservations = None
+	users = []
+
 	for result in cursor.stored_results():
-		number_of_reservations = result.fetchone()[0]
+		users = result.fetchall()
 
 	cursor.close()
 
-	if number_of_reservations == 0:
-		return '', 401
+	return json.dumps(users), 200
 
-	connect_to_db()
-	cursor.callproc('check_reservation_purchased', [id])
+@auth.route('/decode')
+def authorize_user():
+	token = request.form.get('token')
+	user_details = None
 
-	purchased = None
-	for result in cursor.stored_results():
-		purchased = result.fetchone()[0]
+	try:
+		user_details = jwt.decode(token, secret, algorithms=['HS256'])
+	except:
+		return "", 401
 
-	cursor.close()
-
-	if purchased == 1:
-		return '', 402
-		
-	connect_to_db()
-	cursor.callproc('remove_reservation', [id])
-	cursor.close()
-
-	return "OK", 200
-
-@server.route('/reservation/buy', methods = ['POST'])
-def buy_reservation():
-	id = request.form.get('reservation_id')
-	credit_card_info = request.form.get('credit_card_information')
-
-	connect_to_db()
-	cursor.callproc('check_reservation', [id])
-
-	number_of_reservations = None
-	for result in cursor.stored_results():
-		number_of_reservations = result.fetchone()[0]
-
-	cursor.close()
-
-	if number_of_reservations == 0:
-		return '', 401
-
-	connect_to_db()
-	cursor.callproc('check_reservation_purchased', [id])
-
-	purchased = None
-	for result in cursor.stored_results():
-		purchased = result.fetchone()[0]
-
-	cursor.close()
-
-	if purchased == 1:
-		return '', 402
-		
-	connect_to_db()
-	cursor.callproc('buy_reservation', [id, credit_card_info])
-	cursor.close()
-
-	return "OK", 200
-
+	return json.dumps(user_details), 200
 
 def connect_to_db():
 	global connection
@@ -130,4 +88,4 @@ if __name__ == '__main__':
 	connect_to_db()
 	cursor.close()
 
-	server.run(host='0.0.0.0', port=os.getenv('PORT', 8004), debug=True)
+	auth.run(host='0.0.0.0', port=os.getenv('PORT', 8004), debug=True)

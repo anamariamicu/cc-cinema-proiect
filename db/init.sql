@@ -54,11 +54,11 @@ CREATE TABLE reserved_seat(
 	FOREIGN KEY (reservation_id) REFERENCES reservation(id)
 );
 
-CREATE TABLE users(
+CREATE TABLE user(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255),
-    password VARCHAR(255),
-    role INT
+    user_name VARCHAR(255),
+    user_password VARCHAR(255),
+    user_role INT
 );
 
 DELIMITER //
@@ -373,20 +373,27 @@ BEGIN
 END //
 
 DROP PROCEDURE IF EXISTS add_user //
-CREATE PROCEDURE add_user(IN name VARCHAR(256), IN pass VARCHAR(256), IN userrole INT)
+CREATE PROCEDURE add_user(IN u_name VARCHAR(255), IN u_pass VARCHAR(255), IN u_role INT)
 BEGIN
-	INSERT INTO users(username, password, role)
-	VALUES (name, pass, userrole);
+	INSERT INTO user(user_name, user_password, user_role)
+	VALUES (u_name, u_pass, u_role);
 	COMMIT;
 END //
 
 DROP PROCEDURE IF EXISTS check_user //
-CREATE PROCEDURE check_user(IN name VARCHAR(256), IN pass VARCHAR(256), IN userrole INT)
+CREATE PROCEDURE check_user(IN u_name VARCHAR(255), IN u_pass VARCHAR(255))
 BEGIN
-	SELECT role
-	FROM users
-	WHERE username = name AND
-	      password = pass;
+	SELECT id, user_role
+	FROM user
+	WHERE user_name = u_name AND
+	      user_password = u_pass;
+END //
+
+DROP PROCEDURE IF EXISTS get_users //
+CREATE PROCEDURE get_users()
+BEGIN
+	SELECT *
+	FROM user;
 END //
 
 DELIMITER ;

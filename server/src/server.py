@@ -3,6 +3,8 @@ from copy import deepcopy
 import mysql.connector
 import os
 import json
+import sys
+import requests
 
 server = Flask(__name__)
 
@@ -16,9 +18,36 @@ config = {
 
 cursor = None
 connection = None
+url_auth = None
+
+def token_required(something):
+	def wrap():
+		try:
+			token_passed = request.headers['token']
+			print(token_passed)
+		except:
+			return "Token required", 401
+		if token_passed != '' and token_passed != None:
+			url = url_auth + '/decode'
+			print(url)
+			data = {
+				'token': token_passed
+			}
+
+			response = requests.get(url = url, data = data)
+			if response.status_code == 401:
+				return "Invalid token", 401
+			print(response.json())
+			return something(response.json())
+		else:
+			return "Token required", 401
+
+	return wrap
 
 @server.route('/movie')
+@token_required
 def get_movies():
+	print(url_auth)
 	connect_to_db()
 	cursor.callproc('get_movies', [])
 
@@ -302,6 +331,11 @@ def connect_to_db():
 			connected = False
 
 if __name__ == '__main__':
+	if len(sys.argv) != 2:
+		print('Mod de utilizare: python server.py *url_auth*')
+		exit(1)
+	url_auth = sys.argv[1]
+
 	connect_to_db()
 	cursor.close()
 

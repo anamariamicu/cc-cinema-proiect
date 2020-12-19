@@ -1,0 +1,121 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:5.7
+    ports:
+      - "8500:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d/:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    networks:
+      - serverdb
+      - admindb
+      - grafanadb
+      - authdb
+    stdin_open: true
+    tty: true
+
+  auth:
+    build: ./auth
+    links:
+      - db:mysql
+    ports:
+      - '8004:8004'
+    depends_on:
+      - db
+    networks:
+      - admininterfaceauth
+      - clientauth
+      - authdb
+    stdin_open: true
+    tty: true
+
+  admin:
+    build: ./admin
+    links:
+      - db:mysql
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    networks:
+      - admininterface
+      - admindb
+    stdin_open: true
+    tty: true
+      
+  admin-interface:
+    build: ./admin-interface
+    ports:
+      - '8001:8001'
+    links:
+      - db
+      - admin
+    depends_on:
+      - db
+      - admin
+    networks:
+      - admininterface
+      - admininterfaceauth
+    stdin_open: true
+    tty: true
+
+  client:
+    build: ./client
+    ports:
+      - '8003:8003'
+    links:
+      - db
+      - server
+    depends_on:
+      - db
+      - server
+    networks:
+      - serverclient
+      - clientauth
+    stdin_open: true
+    tty: true
+
+  server:
+    build: ./server
+    links:
+      - db:mysql
+    ports:
+      - '8002:8002'
+    depends_on:
+      - db
+    networks:
+      - serverdb
+      - serverclient
+    stdin_open: true
+    tty: true
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./grafana:/var/lib/grafana
+    user: "0"
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=adminpass
+    networks:
+      - grafanadb
+
+networks:
+  serverdb:
+  serverclient:
+  admininterface:
+  admindb:
+  grafanadb:
+  authdb:
+  admininterfaceauth:
+  clientauth:
