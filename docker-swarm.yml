@@ -12,6 +12,9 @@ services:
     volumes:
       - ./data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
     networks:
@@ -45,6 +48,7 @@ services:
       - '8000:8000'
     depends_on:
       - db
+      - auth
     networks:
       - admininterface
       - admindb
