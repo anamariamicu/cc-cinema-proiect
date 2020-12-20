@@ -1,0 +1,16 @@
+_format_version: "2.1"
+
+services:
+  - name: server-kong
+    url: http://server:8002
+    routes:
+      - name: server-service-route
+        paths:
+          - /client
+
+  - name: admin-kong
+    url: http://admin:8000
+    routes:
+      - name: admin-service-route
+        paths:
+          - /admin
