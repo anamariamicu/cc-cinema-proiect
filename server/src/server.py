@@ -25,7 +25,7 @@ def token_required(func):
 		try:
 			token_passed = request.headers['token']
 		except:
-			return "Token required", 401
+			return "Token-ul este obligatoriu", 401
 		if token_passed != '' and token_passed != None:
 			url = url_auth + '/decode'
 			data = {
@@ -34,18 +34,18 @@ def token_required(func):
 			response = requests.get(url = url, data = data)
 
 			if response.status_code == 401:
-				return "Invalid token", 401
+				return "Token invalid", 401
 
 			user_details = response.json()
 			user_id = user_details['user_id']
 			role = user_details['role']
 
-			if (role != 1):
-				return "Unauthorized", 401
+			if role != 1 and role != 0:
+				return "Acces nepermis", 401
 
 			return func()
 		else:
-			return "Token required", 401
+			return "Token-ul este obligatoriu", 401
 
 	wrap.__name__ = func.__name__
 	return wrap
@@ -114,7 +114,7 @@ def get_seats_for_screening():
 	cursor.close()
 
 	if number_of_screenings == 0:
-		return 'ID-ul proiectiei filmului este invalid', 401
+		return 'ID-ul proiectiei filmului este invalid', 410
 
 	connect_to_db()
 	cursor.callproc('get_seats_for_screening', [screening_id])
@@ -167,7 +167,7 @@ def get_reservation():
 
 	if not number_of_screenings:
 		cursor.close()
-		return "", 401
+		return "", 410
 
 	cursor.close()
 
@@ -268,7 +268,7 @@ def remove_reservation():
 	cursor.close()
 
 	if number_of_reservations == 0:
-		return '', 401
+		return '', 410
 
 	connect_to_db()
 	cursor.callproc('check_reservation_purchased', [id])
@@ -304,7 +304,7 @@ def buy_reservation():
 	cursor.close()
 
 	if number_of_reservations == 0:
-		return '', 401
+		return '', 410
 
 	connect_to_db()
 	cursor.callproc('check_reservation_purchased', [id])

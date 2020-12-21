@@ -6,7 +6,7 @@ services:
     routes:
       - name: server-service-route
         paths:
-          - /client
+          - /api
 
   - name: admin-kong
     url: http://admin:8000
@@ -14,3 +14,10 @@ services:
       - name: admin-service-route
         paths:
           - /admin
+
+  - name: auth-kong
+    url: http://auth:8004
+    routes:
+      - name: auth-service-route
+        paths:
+          - /auth

@@ -20,7 +20,6 @@ services:
     networks:
       - serverdb
       - admindb
-      - grafanadb
       - authdb
 
   auth:
@@ -50,24 +49,21 @@ services:
       - db
       - auth
     networks:
-      - admininterface
       - admindb
       - adminauth
       - konggateway
       
-  admin-interface:
-    image: anamariamicu/cc-cinema-proiect-admin-interface
+  interface:
+    image: anamariamicu/cc-cinema-proiect-interface
     deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
     ports:
-      - '8001:8001'
+      - '8005:8005'
     depends_on:
-      - admin-interface
-      - db
+      - kong
     networks:
-      - admininterface
+      - konggateway
     stdin_open: true
     tty: true
 
@@ -84,25 +80,8 @@ services:
       - auth
     networks:
       - serverdb
-      - serverclient
       - serverauth
       - konggateway
-
-  client:
-    image: anamariamicu/cc-cinema-proiect-client
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-    ports:
-      - '8003:8003'
-    depends_on:
-      - server
-      - db
-    networks:
-      - serverclient
-    stdin_open: true
-    tty: true
 
   kong:
     image: kong:latest
@@ -125,31 +104,9 @@ services:
     networks:
       - konggateway
 
-  grafana:
-    image: grafana/grafana:latest
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./grafana:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=adminpass
-    user: "0"
-    depends_on:
-      - db
-    networks:
-      - grafanadb
-
 networks:
   serverdb:
-  serverclient:
-  admininterface:
   admindb:
-  grafanadb:
   authdb:
   serverauth:
   adminauth:

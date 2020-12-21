@@ -24,7 +24,7 @@ def token_required(func):
 		try:
 			token_passed = request.headers['token']
 		except:
-			return "Token required", 401
+			return "Token-ul este obligatoriu", 401
 		if token_passed != '' and token_passed != None:
 			url = url_auth + '/decode'
 			data = {
@@ -33,18 +33,18 @@ def token_required(func):
 			response = requests.get(url = url, data = data)
 
 			if response.status_code == 401:
-				return "Invalid token", 401
+				return "Token invalid", 401
 
 			user_details = response.json()
 			user_id = user_details['user_id']
 			role = user_details['role']
 
-			if (role != 0):
-				return "Unauthorized", 401
+			if role != 0:
+				return "Acces nepermis", 401
 
 			return func()
 		else:
-			return "Token required", 401
+			return "Token-ul este obligatoriu", 401
 
 	wrap.__name__ = func.__name__
 	return wrap
