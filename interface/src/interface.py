@@ -55,13 +55,18 @@ def print_login(url):
 			'password': password_auth,
 		}
 
+		print("URL:")
+		print(current_url)
+
 		response = requests.post(url = current_url, data = data)
 
 		if response.status_code == 200:
 			print('Autentificare realizata cu succes')
 			headers = {'token': response.text}
-		else:
+		elif response.status_code == 401:
 			print('Credentiale incorecte')
+		else:
+			print('Serviciu indisponibil')
 			print(response)
 
 def print_movies(url):
