@@ -62,6 +62,7 @@ def print_login(url):
 			headers = {'token': response.text}
 		else:
 			print('Credentiale incorecte')
+			print(response)
 
 def print_movies(url):
 	url = url + '/api/movie'
