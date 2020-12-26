@@ -1,0 +1,40 @@
+Instructiuni si observatii pentru rularea proiectului:
+
+1. Rulare cu Play with Docker:
+- se creeaza 3 noduri (unul va fi manager, celelelate doua vor fi workers)
+- vom considera nodul 1 ca fiind manager
+- pe nodul 1 se ruleaza comanda: "docker swarm init --advertise-addr *IP_NOD1*"
+- pe nodurile 2 si 3 se ruleaza comanda generata de rularea comenzii de mai sus pe nodul 1
+- pe nodul 1 se ruleaza comanda: "mkdir data"
+- pe masina locala se ruleaza:
+    - "scp docker-swarm.yml *ADRESA_NOD1*:."
+    - "scp -r kong *ADRESA_NOD1*:."
+    - "scp -r db *ADRESA_NOD1*:."
+- pe nodul 1 se ruleaza: "docker stack deploy -c docker-swarm.yml cinema"
+- se asteapta cateva secunde
+- se verifica faptul ca toate container-ele au pornit corespunzator: "docker stack ps cinema"
+- trebuie ca desired_state == current_state
+- pentru interfata: pe nodul 1:
+    - "docker ps"
+    - se copiaza ID-ul container-ului interface
+    - "docker attach *ID_CONTAINER*"
+    - se apasa un extra ENTER
+- pentru stergerea stivei se poate rula "docker stack rm cinema"
+
+2. Rulare local:
+- "docker-compose -f docker-compose-local.yml up --build"
+- pentru verificare: "docker ps"
+- pentru interfata:
+    - "docker ps"
+    - se copiaza ID-ul container-ului interface
+    - "docker attach *ID_CONTAINER*"
+
+OBSERVATII:
+1. Daca se va modifica vreodata fisierul init.sql, este necesarea si stergerea folder-ului data pentru a rula din nou script-ul de initializare al bazei de date.
+2. Utilizatori existenti:
+    - admin:adminpass
+    - client:clientpass
+3. Se poate testa si cu Postman:
+    - se trimite un POST la /auth/login cu un body de tip form-data in care se completeaza campurile 'username' si 'password'
+    - token-ul returnat va fi folosit la orice cerere ulterioara prin adugarea lui in headers in cadrul campului 'token'
+    - celelalte cereri se vor face la endpoint-urile prefixare cu /client sau /admin

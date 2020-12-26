@@ -36,6 +36,7 @@ services:
       - serverauth
       - authdb
       - adminauth
+      - konggateway
 
   admin:
     image: anamariamicu/cc-cinema-proiect-admin
@@ -52,6 +53,8 @@ services:
       - admindb
       - adminauth
       - konggateway
+    environment:
+      URL_AUTH: "http://auth:8004"
       
   interface:
     image: anamariamicu/cc-cinema-proiect-interface
@@ -64,6 +67,8 @@ services:
       - kong
     networks:
       - konggateway
+    environment:
+      URL_GATEWAY: "http://kong:8000"
     stdin_open: true
     tty: true
 
@@ -82,6 +87,8 @@ services:
       - serverdb
       - serverauth
       - konggateway
+    environment:
+      URL_AUTH: "http://auth:8004"
 
   kong:
     image: kong:latest
