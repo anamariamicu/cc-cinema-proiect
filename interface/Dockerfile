@@ -5,4 +5,4 @@ RUN pip install -U setuptools
 RUN pip install -r requirements.txt
 COPY src /interface
 EXPOSE 8005
-CMD ["python", "interface.py", "http://kong:8000"]
+CMD ["python", "interface.py"]

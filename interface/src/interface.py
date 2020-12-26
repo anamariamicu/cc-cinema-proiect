@@ -1,5 +1,6 @@
 import requests
 import sys
+import os
 
 headers = None
 
@@ -54,9 +55,6 @@ def print_login(url):
 			'username': username_auth,
 			'password': password_auth,
 		}
-
-		print("URL:")
-		print(current_url)
 
 		response = requests.post(url = current_url, data = data)
 
@@ -442,10 +440,15 @@ def print_cinema_halls(url):
 		print('Numar de locuri pe rand: ' + str(cinema_hall[3]))
 
 if __name__ == '__main__':
-	if len(sys.argv) != 2:
-		print('Mod de utilizare: python interface.py *url_gateway*')
+	if len(sys.argv) != 1:
+		print('Mod de utilizare: python interface.py')
 		exit(1)
-	url = sys.argv[1]
+
+	url = os.environ.get('URL_GATEWAY')
+
+	if (url == None):
+		print('Variabila de mediu necesara: URL_GATEWAY')
+		exit(1)
 
 	print_login(url)
 	

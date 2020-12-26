@@ -5,4 +5,4 @@ RUN pip install -U setuptools
 RUN pip install -r requirements.txt
 COPY src /server
 EXPOSE 8002
-CMD ["python", "server.py", "http://auth:8004"]
+CMD ["python", "server.py"]

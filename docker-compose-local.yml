@@ -45,6 +45,8 @@ services:
       - admindb
       - adminauth
       - konggateway
+    environment:
+      URL_AUTH: "http://auth:8004"
     stdin_open: true
     tty: true
 
@@ -62,6 +64,8 @@ services:
       - serverdb
       - serverauth
       - konggateway
+    environment:
+      URL_AUTH: "http://auth:8004"
     stdin_open: true
     tty: true
 
@@ -75,6 +79,8 @@ services:
       - kong
     networks:
       - konggateway
+    environment:
+      URL_GATEWAY: "http://kong:8000"
     stdin_open: true
     tty: true
 

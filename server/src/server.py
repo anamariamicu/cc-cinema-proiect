@@ -340,12 +340,14 @@ def connect_to_db():
 			connected = False
 
 if __name__ == '__main__':
-	if len(sys.argv) != 2:
-		print('Mod de utilizare: python server.py *url_auth*')
+	if len(sys.argv) != 1:
+		print('Mod de utilizare: python server.py')
 		exit(1)
-	url_auth = sys.argv[1]
 
-	connect_to_db()
-	cursor.close()
+	url_auth = os.environ.get('URL_AUTH')
+
+	if (url_auth == None):
+		print('Variabila de mediu necesara: URL_AUTH')
+		exit(1)
 
 	server.run(host='0.0.0.0', port=os.getenv('PORT', 8002), debug=True)
