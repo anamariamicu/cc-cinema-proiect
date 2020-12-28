@@ -21,6 +21,7 @@ services:
       - serverdb
       - admindb
       - authdb
+      - adminerdb
 
   auth:
     image: anamariamicu/cc-cinema-proiect-auth
@@ -111,6 +112,15 @@ services:
     networks:
       - konggateway
 
+  adminer:
+    image: adminer
+    ports:
+      - '8080:8080'
+    networks:
+      - adminerdb
+    depends_on:
+      - db
+
 networks:
   serverdb:
   admindb:
@@ -118,3 +128,4 @@ networks:
   serverauth:
   adminauth:
   konggateway:
+  adminerdb:

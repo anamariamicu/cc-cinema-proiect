@@ -14,6 +14,7 @@ services:
       - serverdb
       - admindb
       - authdb
+      - adminerdb
     stdin_open: true
     tty: true
 
@@ -102,6 +103,15 @@ services:
     networks:
       - konggateway
 
+  adminer:
+    image: adminer
+    ports:
+      - '8080:8080'
+    networks:
+      - adminerdb
+    depends_on:
+      - db
+
 networks:
   serverdb:
   admindb:
@@ -109,3 +119,4 @@ networks:
   adminauth:
   serverauth:
   konggateway:
+  adminerdb:

@@ -29,6 +29,15 @@ Instructiuni si observatii pentru rularea proiectului:
     - se copiaza ID-ul container-ului interface
     - "docker attach *ID_CONTAINER*"
 
+3. Adminer:
+- este disponibil pe portul 8080
+- pentru conectare se vor folosi urmatoarele date:
+    - Sistem = MySQL
+    - Server = db
+    - Nume de utilizator = root
+    - Parola = rootpass
+    - Baza de date = cinema_service
+
 OBSERVATII:
 1. Daca se va modifica vreodata fisierul init.sql, este necesarea si stergerea folder-ului data pentru a rula din nou script-ul de initializare al bazei de date.
 2. Utilizatori existenti:
@@ -37,4 +46,4 @@ OBSERVATII:
 3. Se poate testa si cu Postman:
     - se trimite un POST la /auth/login cu un body de tip form-data in care se completeaza campurile 'username' si 'password'
     - token-ul returnat va fi folosit la orice cerere ulterioara prin adugarea lui in headers in cadrul campului 'token'
-    - celelalte cereri se vor face la endpoint-urile prefixare cu /client sau /admin
+    - celelalte cereri se vor face la endpoint-urile prefixate cu /client sau /admin
