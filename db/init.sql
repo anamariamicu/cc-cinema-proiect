@@ -404,20 +404,20 @@ call add_cinema_hall('Barcelona', 9, 10);
 call add_movie('Miami Bici', 'Comedie', 98, 'Matei Dima si Codin Maticiuc interpreteaza rolurile a doi romani saraci, plecati in Miami ca sa atinga visul american si sa se imbogateasca');
 call add_movie('Jumanji: Nivelul urmator', 'Actiune', 124, 'In Jumanji: Nivelul urmator jucatorii trebuie sa infrunte deserturi aride si munti inzapeziti pentru a scapa cu viata din cel mai periculos joc din lume');
 
-call add_screening(1, 1, '2020-03-17 09:00:00');
-call add_screening(2, 2, '2020-03-17 18:00:00');
-call add_screening(1, 1, '2020-03-17 12:00:00');
-call add_screening(1, 1, '2020-03-17 16:00:00');
-call add_screening(1, 1, '2020-03-17 19:00:00');
-call add_screening(1, 1, '2020-03-17 21:50:00');
-call add_screening(2, 2, '2020-03-17 18:00:00');
-call add_screening(2, 2, '2020-03-17 21:50:00');
+call add_screening(1, 1, '2021-03-17 09:00:00');
+call add_screening(2, 2, '2021-03-17 18:00:00');
+call add_screening(1, 1, '2021-03-17 12:00:00');
+call add_screening(1, 1, '2021-03-17 16:00:00');
+call add_screening(1, 1, '2021-03-17 19:00:00');
+call add_screening(1, 1, '2021-03-17 21:50:00');
+call add_screening(2, 2, '2021-03-17 18:00:00');
+call add_screening(2, 2, '2021-03-17 21:50:00');
 
-call add_screening(1, 1, '2020-03-18 09:00:00');
-call add_screening(2, 2, '2020-03-18 18:00:00');
-call add_screening(1, 1, '2020-03-18 19:00:00');
-call add_screening(1, 1, '2020-03-18 21:50:00');
-call add_screening(2, 2, '2020-03-18 19:00:00');
+call add_screening(1, 1, '2021-03-18 09:00:00');
+call add_screening(2, 2, '2021-03-18 18:00:00');
+call add_screening(1, 1, '2021-03-18 19:00:00');
+call add_screening(1, 1, '2021-03-18 21:50:00');
+call add_screening(2, 2, '2021-03-18 19:00:00');
 
 call add_reservation(1);
 call add_reservation(1);
