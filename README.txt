@@ -43,6 +43,7 @@ aplicatiei se pot gasi in diagrama "db.png"
 - interface: expune o interfata in linie de comanda pentru a putea testa
 orice endpoint definit in cadrul celorlalte servicii; apelarea lor se face
 prin intermediul gateway-ului
+- adminer: utilitar de gestiune a bazei de date
 
 Rularea proiectului:
 Detalii despre modul in care poate fi rulat proiectul se gasesc in fisierul
